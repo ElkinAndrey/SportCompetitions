@@ -71,7 +71,7 @@ namespace SportCompetitionsAPI.Controllers.Controllers
             };
 
             return Ok(response);
-    }
+        }
 
         /// <summary>
         /// Получить людей по id соревнования
@@ -89,6 +89,34 @@ namespace SportCompetitionsAPI.Controllers.Controllers
                     Email = "dima@dima.dima",
                     DateOfBirth = new DateTime(2002, 5, 8, 0, 0, 0),
                 },
+                new Person()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Иван Иванович Иванов",
+                    Email = "ivan@ivan.ivan",
+                    DateOfBirth = new DateTime(2003, 6, 1, 0, 0, 0),
+                },
+                new Person()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Андрей Андреевич Андреев",
+                    Email = "andrey@andrey.andrey",
+                    DateOfBirth = new DateTime(1999, 10, 24, 0, 0, 0),
+                },
+            };
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Получить людей по id соревнования
+        /// </summary>
+        /// <param name="id">Id соревнования</param>
+        [HttpGet("{id}/persons/not")]
+        public async Task<IActionResult> ReadNotParticipatingPersonsById(Guid id)
+        {
+            var response = new List<Person>()
+            {
                 new Person()
                 {
                     Id = Guid.NewGuid(),

@@ -10,6 +10,7 @@ import Input from "../../views/Input/Input";
 import Select from "../../views/Select/Select";
 import SportApi from "../../api/sportApi";
 import ButtonLink from "../../views/ButtonLink/ButtonLink";
+import BigLoader from "../../views/BigLoader/BigLoader";
 
 const Competitions = () => {
   const [isOpenModal, isOpenModalChange] = useState(false);
@@ -55,8 +56,9 @@ const Competitions = () => {
     newCompetitionsSportChange("");
   };
 
-  const [fetchGet] = useFetching(getCallback);
-  const [fetchGetSports] = useFetching(getSportsCallback);
+  const [fetchGet, isLoadingfetchGet] = useFetching(getCallback);
+  const [fetchGetSports, isLoadingfetchGetSports] =
+    useFetching(getSportsCallback);
   const [fetchDelete, isLoadingDelete] = useFetching(deleteCallback);
   const [fetchAdd, isLoadingAdd] = useFetching(addCallback);
 
@@ -74,6 +76,18 @@ const Competitions = () => {
     fetchGet();
     fetchGetSports();
   }, []);
+
+  if (isLoadingfetchGet || isLoadingfetchGetSports)
+    return (
+      <div>
+        <HeaderAdd
+          text="Соревнования"
+          className={classes.header}
+          onClick={openModal}
+        />
+        <BigLoader />
+      </div>
+    );
 
   return (
     <div>
