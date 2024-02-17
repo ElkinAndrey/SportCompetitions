@@ -8,9 +8,9 @@ const LeftMenu = ({ children }) => {
       <div className={classes.bodyMenu}>
         <div className={classes.logo}>Меню</div>
         <div className={classes.links}>
-          <MenuLink src="images/competitions.png" text="Соревнования" to="" />
-          <MenuLink src="images/persons.png" text="Люди" to="" />
-          <MenuLink src="images/sports.png" text="Виды спорта" to="" />
+          <MenuLink src="images/competitions.png" text="Соревнования" to="/" />
+          <MenuLink src="images/persons.png" text="Люди" to="/persons" />
+          <MenuLink src="images/sports.png" text="Виды спорта" to="/sports" />
         </div>
       </div>
       <div>{children}</div>
