@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import useFetching from "./hooks/useFetching";
 import HomeApi from "./api/homeApi";
+import LeftMenu from "./layout/LeftMenu/LeftMenu";
 
 const App = () => {
   const [hello, helloChange] = useState("");
@@ -16,7 +17,7 @@ const App = () => {
     fetchHello();
   }, []);
 
-  return <div>{hello}</div>;
+  return <LeftMenu>123</LeftMenu>;
 };
 
 export default App;

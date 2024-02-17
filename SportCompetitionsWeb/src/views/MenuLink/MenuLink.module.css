@@ -1,0 +1,22 @@
+.body {
+  display: flex;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.body:hover {
+  background-color: #e0e3e6;
+}
+
+.image {
+  width: 20px;
+  height: 20px;
+  margin-right: 15px;
+  user-select: none;
+}
+
+.text {
+  user-select: none;
+}
