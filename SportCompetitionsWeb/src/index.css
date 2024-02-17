@@ -39,3 +39,7 @@ table td {
   background: #ffffff;
   border-color: #d4d4d4;
 }
+
+img {
+  display: block;
+}

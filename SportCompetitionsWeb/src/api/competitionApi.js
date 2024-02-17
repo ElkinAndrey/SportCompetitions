@@ -45,6 +45,11 @@ class CompetitionApi {
     });
     return response;
   }
+
+  static async change(id, params) {
+    const response = await axios.put(`${URL}/${id}`, params);
+    return response;
+  }
 }
 
 export default CompetitionApi;

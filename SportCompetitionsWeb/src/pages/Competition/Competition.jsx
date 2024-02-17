@@ -6,18 +6,33 @@ import useFetching from "../../hooks/useFetching";
 import ButtonLink from "../../views/ButtonLink/ButtonLink";
 import ButtonDelete from "../../views/ButtonDelete/ButtonDelete";
 import BigLoader from "../../views/BigLoader/BigLoader";
+import ButtonImage from "../../views/ButtonImage/ButtonImage";
+import Modal from "../../views/Modal/Modal";
+import Input from "../../views/Input/Input";
+import Button from "../../views/Button/Button";
+import Select from "../../views/Select/Select";
+import SportApi from "../../api/sportApi";
 
 const Competition = () => {
   const params = useParams();
+
+  const [isOpenModal, isOpenModalChange] = useState(false);
   const [competition, competitionChange] = useState({});
   const [persons, personsChange] = useState([]);
   const [personsNot, personsNotChange] = useState([]);
   const [deletedId, deletedIdChange] = useState(null);
   const [addId, addIdChange] = useState(null);
+  const [sports, sportsChange] = useState([]);
+  const [newCompetitionsName, newCompetitionsNameChange] = useState("");
+  const [newCompetitionsDate, newCompetitionsDateChange] = useState("");
+  const [newCompetitionsSport, newCompetitionsSportChange] = useState(null);
 
   const getByIdCallback = async (id) => {
     const response = await CompetitionApi.getById(id);
     competitionChange(response.data);
+    newCompetitionsNameChange(response.data.name);
+    newCompetitionsDateChange(response.data.date);
+    newCompetitionsSportChange(response.data.sport.id);
   };
 
   const getPersonsCallback = async (id) => {
@@ -54,6 +69,32 @@ const Competition = () => {
     addIdChange(null);
   };
 
+  const getSportsCallback = async () => {
+    const response = await SportApi.get();
+    const sports = response.data.map((sport) => {
+      return { value: sport.id, name: sport.name };
+    });
+    sportsChange(sports);
+  };
+
+  const changeCallback = async () => {
+    const p = {
+      name: newCompetitionsName,
+      date: newCompetitionsDate,
+      sportId: newCompetitionsSport,
+    };
+    await CompetitionApi.change(params.id, p);
+    isOpenModalChange(false);
+    const sport =
+      sports[sports.findIndex((p) => p.value === newCompetitionsSport)];
+    const newCompetition = {
+      name: newCompetitionsName,
+      date: newCompetitionsDate,
+      sport: { id: sport.value, name: sport.name },
+    };
+    competitionChange(newCompetition);
+  };
+
   const [fetchGetById, isLoadingGetById] = useFetching(getByIdCallback);
   const [fetchGetUsers, isLoadingGetUsers] = useFetching(getPersonsCallback);
   const [fetchGetNotParticipatingUsers, isLoadingGetNotParticipatingUsers] =
@@ -63,6 +104,9 @@ const Competition = () => {
   const [fetchAddToCompetition, isLoadingAddToCompetition] = useFetching(
     addToCompetitionCallback
   );
+  const [fetchGetSports, isLoadingfetchGetSports] =
+    useFetching(getSportsCallback);
+  const [fetchChange, isLoadingChange] = useFetching(changeCallback);
 
   const del = (id) => {
     if (isLoadingDeleteFromCompetition) return;
@@ -76,27 +120,44 @@ const Competition = () => {
     fetchAddToCompetition(id);
   };
 
+  const openModal = () => {
+    isOpenModalChange(true);
+  };
+
   useEffect(() => {
     fetchGetById(params.id);
     fetchGetUsers(params.id);
     fetchGetNotParticipatingUsers(params.id);
+    fetchGetSports();
   }, []);
+
+  const Head = () => (
+    <div className={classes.header}>
+      <div className={classes.logo}>Соревнование</div>
+      <ButtonImage
+        src="/images/change.png"
+        title="Изменить соревнование"
+        onClick={openModal}
+      />
+    </div>
+  );
 
   if (
     isLoadingGetById ||
     isLoadingGetUsers ||
-    isLoadingGetNotParticipatingUsers
+    isLoadingGetNotParticipatingUsers ||
+    isLoadingfetchGetSports
   )
     return (
       <div>
-        <div className={classes.logo}>Соревнование</div>
+        <Head />
         <BigLoader />
       </div>
     );
 
   return (
     <div>
-      <div className={classes.logo}>Соревнование</div>
+      <Head />
       <div className={classes.info}>
         <div className={classes.name}>{competition.name}</div>
         <div className={classes.params}>
@@ -112,7 +173,6 @@ const Competition = () => {
             <th>Email</th>
             <th>День рождения</th>
             <th>Открыть</th>
-            <th>Изменить</th>
             <th>Исключить</th>
           </tr>
         </thead>
@@ -124,12 +184,6 @@ const Competition = () => {
               <td className={classes.tableSport}>{person.dateOfBirth}</td>
               <td className={classes.tableButton}>
                 <ButtonLink text="Открыть" to={`/persons/${person.id}`} />
-              </td>
-              <td className={classes.tableButton}>
-                <ButtonLink
-                  text="Изменить"
-                  to={`/persons/${person.id}/change`}
-                />
               </td>
               <td className={classes.tableButton}>
                 <ButtonDelete
@@ -152,7 +206,6 @@ const Competition = () => {
             <th>Email</th>
             <th>День рождения</th>
             <th>Открыть</th>
-            <th>Изменить</th>
             <th>Исключить</th>
           </tr>
         </thead>
@@ -166,12 +219,6 @@ const Competition = () => {
                 <ButtonLink text="Открыть" to={`/persons/${person.id}`} />
               </td>
               <td className={classes.tableButton}>
-                <ButtonLink
-                  text="Изменить"
-                  to={`/persons/${person.id}/change`}
-                />
-              </td>
-              <td className={classes.tableButton}>
                 <ButtonDelete
                   text="Добавить"
                   onClick={() => add(person.id)}
@@ -182,6 +229,36 @@ const Competition = () => {
           ))}
         </tbody>
       </table>
+      <Modal active={isOpenModal} setActive={isOpenModalChange}>
+        <div className={classes.modalBody}>
+          <div className={classes.modalLogo}>Изменить соревнование</div>
+          <Input
+            value={newCompetitionsName}
+            setValue={newCompetitionsNameChange}
+            placeholder="Название"
+            className={classes.inputName}
+          />
+          <input
+            type="datetime-local"
+            value={newCompetitionsDate}
+            onChange={(e) => newCompetitionsDateChange(e.target.value)}
+            className={classes.inputDate}
+          />
+          <Select
+            value={newCompetitionsSport}
+            onChange={newCompetitionsSportChange}
+            options={sports}
+            startName={"Спорт"}
+            placeholder={"Вид спорта"}
+          />
+          <Button
+            text={"Сохранить"}
+            className={classes.addButton}
+            isLoading={isLoadingChange}
+            onClick={fetchChange}
+          />
+        </div>
+      </Modal>
     </div>
   );
 };

@@ -77,25 +77,26 @@ const Competitions = () => {
     fetchGetSports();
   }, []);
 
+  const Head = () => (
+    <HeaderAdd
+      text="Соревнования"
+      className={classes.header}
+      onClick={openModal}
+      title="Добавить соревнование"
+    />
+  );
+
   if (isLoadingfetchGet || isLoadingfetchGetSports)
     return (
       <div>
-        <HeaderAdd
-          text="Соревнования"
-          className={classes.header}
-          onClick={openModal}
-        />
+        <Head />
         <BigLoader />
       </div>
     );
 
   return (
     <div>
-      <HeaderAdd
-        text="Соревнования"
-        className={classes.header}
-        onClick={openModal}
-      />
+      <Head />
       <table>
         <thead>
           <tr>
@@ -103,7 +104,6 @@ const Competitions = () => {
             <th>Дата</th>
             <th>Вид спорта</th>
             <th>Открыть</th>
-            <th>Изменить</th>
             <th>Удалить</th>
           </tr>
         </thead>
@@ -115,9 +115,6 @@ const Competitions = () => {
               <td className={classes.tableSport}>{competition.sport.name}</td>
               <td className={classes.tableButton}>
                 <ButtonLink text="Открыть" to={`/${competition.id}`} />
-              </td>
-              <td className={classes.tableButton}>
-                <ButtonLink text="Изменить" to={`/${competition.id}/change`} />
               </td>
               <td className={classes.tableButton}>
                 <ButtonDelete
