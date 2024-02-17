@@ -22,4 +22,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseCors(options =>
+    options.WithOrigins("http://localhost:3000") //  Кому можно получать данные с сервера
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials()); // Разрешить отправку куки
+
 app.Run();
