@@ -7,3 +7,35 @@
   margin: 0px;
   font-family: Montserrat;
 }
+
+html body {
+  margin: 0px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  /* display: none; <- Crashes Chrome on hover */
+  -webkit-appearance: none;
+  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+table {
+  font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+  font-size: 14px;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+table th,
+td {
+  border-style: solid;
+  border-width: 1px;
+  padding: 5px 5px;
+  background: #e6e6e6;
+  border-color: #e6e6e6;
+}
+
+table td {
+  background: #ffffff;
+  border-color: #d4d4d4;
+}

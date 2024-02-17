@@ -1,0 +1,30 @@
+.button {
+  border: 1px #d6d8db solid;
+  padding: 5px 10px;
+  background-color: #f6f8fa;
+  border-radius: 5px;
+  transition: all 0.1s;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+}
+
+.button:hover {
+  background-color: #f3f4f6;
+}
+
+.textHidden {
+  opacity: 0;
+}
+
+.loader {
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  z-index: 100;
+}

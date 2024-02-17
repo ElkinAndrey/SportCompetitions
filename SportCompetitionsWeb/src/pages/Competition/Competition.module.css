@@ -1,0 +1,23 @@
+.logo {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.info {
+  margin-bottom: 10px;
+}
+
+.name {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.params {
+  display: flex;
+  font-size: 13px;
+  color: #737577;
+}
+
+.date {
+  margin-right: 10px;
+}

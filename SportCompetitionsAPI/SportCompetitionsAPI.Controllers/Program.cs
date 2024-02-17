@@ -1,3 +1,5 @@
+using SportCompetitionsAPI.Controllers.Middlewares;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -27,5 +29,7 @@ app.UseCors(options =>
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials()); // Разрешить отправку куки
+
+app.UseTimeDelayMiddleware();
 
 app.Run();

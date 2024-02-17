@@ -13,7 +13,7 @@ const LeftMenu = ({ children }) => {
           <MenuLink src="images/sports.png" text="Виды спорта" to="/sports" />
         </div>
       </div>
-      <div>{children}</div>
+      <div className={classes.children}>{children}</div>
     </div>
   );
 };
