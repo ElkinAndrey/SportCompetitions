@@ -15,6 +15,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<SqlQueries>();
 builder.Services.AddTransient<ISportService, ADOSportService>();
 builder.Services.AddTransient<IPersonService, ADOPersonService>();
+builder.Services.AddTransient<ICompetitionService, ADOCompetitionService>();
 
 var app = builder.Build();
 
@@ -38,5 +39,7 @@ app.UseCors(options =>
         .AllowCredentials()); // Разрешить отправку куки
 
 app.UseTimeDelayMiddleware();
+
+app.UseExceptionHandlerMiddleware();
 
 app.Run();

@@ -46,10 +46,10 @@ namespace SportCompetitionsAPI.Controllers.Controllers
             var persons = await personService.Read();
             var response = persons.Select(person => new
             {
-                person.Id,
-                person.Name,
-                person.Email,
-                person.DateOfBirth,
+                Id = person.Id,
+                Name = person.Name,
+                Email = person.Email,
+                DateOfBirth = person.DateOfBirth,
             });
             return Ok(response);
         }
@@ -64,10 +64,10 @@ namespace SportCompetitionsAPI.Controllers.Controllers
             var person = await personService.ReadById(id);
             var response = new
             {
-                person.Id,
-                person.Name,
-                person.Email,
-                person.DateOfBirth,
+                Id = person.Id,
+                Name = person.Name,
+                Email = person.Email,
+                DateOfBirth = person.DateOfBirth,
             };
             return Ok(response);
         }

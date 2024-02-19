@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SportCompetitionsAPI.Controllers.Dto.Competition;
 using SportCompetitionsAPI.Domain.Entities;
+using SportCompetitionsAPI.Service.Abstractions;
 
 namespace SportCompetitionsAPI.Controllers.Controllers
 {
@@ -12,12 +13,27 @@ namespace SportCompetitionsAPI.Controllers.Controllers
     public class CompetitionController : ControllerBase
     {
         /// <summary>
+        /// Сервис для работы с соревнованиями
+        /// </summary>
+        private ICompetitionService competitionService;
+
+        /// <summary>
+        /// Контроллер для работы с соревнованиями
+        /// </summary>
+        /// <param name="competitionService">Сервис для работы с соревнованиями</param>
+        public CompetitionController(ICompetitionService competitionService)
+        {
+            this.competitionService = competitionService;
+        }
+
+        /// <summary>
         /// Создать соревнование
         /// </summary>
         /// <param name="request">Данные для создания</param>
         [HttpPost("")]
         public async Task<IActionResult> Create(CreateCompetitionDto request)
         {
+            await competitionService.Create(request.Name, request.Date, request.SportId);
             return Ok();
         }
 
@@ -27,31 +43,18 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Read()
         {
-            var response = new List<Competition>()
+            var competitions = await competitionService.Read();
+            var response = competitions.Select(competition => new
             {
-                new Competition() 
-                { 
-                    Id = Guid.NewGuid(), 
-                    Name = "Открытый турнир по Брейкингу 1х1 среди новичков и продолжающих", 
-                    Date = new DateTime(2024, 2, 16, 20, 30, 0), 
-                    Sport = new Sport() { Id = Guid.NewGuid(), Name = "Волейбол", Description = "" },
-                },
-                new Competition() 
-                { 
-                    Id = Guid.NewGuid(), 
-                    Name = "Матч по гандболу \"Пермские медведи\" - \"Зенит\"",
-                    Date = new DateTime(2024, 2, 18, 20, 0, 0),
-                    Sport = new Sport() { Id = Guid.NewGuid(), Name = "Футбол", Description = "" },
-                },
-                new Competition() 
+                Id = competition.Id,
+                Name = competition.Name,
+                Date = competition.Date,
+                Sport = new
                 {
-                    Id = Guid.NewGuid(), 
-                    Name = "Спортивные мероприятия на катке у \"Театра-Театра\"",
-                    Date = new DateTime(2024, 2, 20, 16, 0, 0),
-                    Sport = new Sport() { Id = Guid.NewGuid(), Name = "Баскетбол", Description = "" },
-                },
-            };
-
+                    Id = competition.Sport.Id,
+                    Name = competition.Sport.Name,
+                }
+            });
             return Ok(response);
         }
 
@@ -62,14 +65,18 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> ReadById(Guid id)
         {
-            var response = new Competition()
+            var competition = await competitionService.ReadById(id);
+            var response = new
             {
-                Id = Guid.NewGuid(),
-                Name = "Открытый турнир по Брейкингу 1х1 среди новичков и продолжающих",
-                Date = new DateTime(2024, 2, 16, 20, 30, 0),
-                Sport = new Sport() { Id = Guid.NewGuid(), Name = "Волейбол", Description = "" },
+                Id = competition.Id,
+                Name = competition.Name,
+                Date = competition.Date,
+                Sport = new
+                {
+                    Id = competition.Sport.Id,
+                    Name = competition.Sport.Name,
+                }
             };
-
             return Ok(response);
         }
 
@@ -144,6 +151,7 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdateCompetitionDto request)
         {
+            await competitionService.Update(id, request.Name, request.Date, request.SportId);
             return Ok();
         }
 
@@ -154,6 +162,7 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
+            await competitionService.Delete(id);
             return Ok();
         }
 
@@ -164,6 +173,8 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         [HttpPut("{id}/person/add")]
         public async Task<IActionResult> AddPerson(Guid id, AddPersonToCompetitionDto request)
         {
+
+            await competitionService.IncludePersonInCompetitions(id, request.PersonId, true);
             return Ok();
         }
 
@@ -174,6 +185,7 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         [HttpPut("{id}/person/delete")]
         public async Task<IActionResult> DeletePerson(Guid id, DeletePersonFromCompetitionDto request)
         {
+            await competitionService.IncludePersonInCompetitions(id, request.PersonId, false);
             return Ok();
         }
     }

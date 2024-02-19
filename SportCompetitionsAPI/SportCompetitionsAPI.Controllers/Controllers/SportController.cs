@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SportCompetitionsAPI.Controllers.Dto.Sport;
-using SportCompetitionsAPI.Domain.Entities;
 using SportCompetitionsAPI.Service.Abstractions;
-using System.Xml.Linq;
 
 namespace SportCompetitionsAPI.Controllers.Controllers
 {
@@ -48,9 +45,9 @@ namespace SportCompetitionsAPI.Controllers.Controllers
             var sports = await sportService.Read();
             var response = sports.Select(sport => new
             {
-                sport.Id,
-                sport.Name,
-                sport.Description,
+                Id = sport.Id,
+                Name = sport.Name,
+                Description = sport.Description,
             });
             return Ok(response);
         }

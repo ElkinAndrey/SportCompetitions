@@ -41,6 +41,10 @@ namespace SportCompetitionsAPI.Controllers.Middlewares
 
             if (exception is SportNotFoundException)
                 return CreateError(context, 404, exception);
+            if (exception is CompetitionNotFoundException)
+                return CreateError(context, 404, exception);
+            if (exception is PersonNotFoundException)
+                return CreateError(context, 404, exception);
 
             return CreateError(context, 500, exception);
         }
