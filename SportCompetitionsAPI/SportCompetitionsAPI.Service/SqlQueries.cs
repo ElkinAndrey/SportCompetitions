@@ -30,6 +30,7 @@ namespace SportCompetitionsAPI.Service
         /// <returns>Таблица с данными</returns>
         public async Task<DataTable> QuerySelectAsync(string queryString)
         {
+            await Console.Out.WriteLineAsync(queryString);
             var req = await Task.Run(() =>
             {
                 SqlDataAdapter adapter = new SqlDataAdapter(queryString, connection);
@@ -47,6 +48,7 @@ namespace SportCompetitionsAPI.Service
         /// <returns>Количество выполненных запросов</returns>
         public async Task<int> QueryChangesAsync(string queryString)
         {
+            await Console.Out.WriteLineAsync(queryString);
             int numberCompletedRequests = 0;
             await connection.OpenAsync();
             using (SqlCommand cmd = new SqlCommand(queryString, connection))

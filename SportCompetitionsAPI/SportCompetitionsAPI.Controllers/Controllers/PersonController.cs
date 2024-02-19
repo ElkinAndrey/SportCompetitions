@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SportCompetitionsAPI.Controllers.Dto.Person;
 using SportCompetitionsAPI.Domain.Entities;
+using SportCompetitionsAPI.Service.Abstractions;
 
 namespace SportCompetitionsAPI.Controllers.Controllers
 {
@@ -12,12 +13,27 @@ namespace SportCompetitionsAPI.Controllers.Controllers
     public class PersonController : ControllerBase
     {
         /// <summary>
+        /// Сервис для работы с видами спорта
+        /// </summary>
+        private IPersonService personService;
+
+        /// <summary>
+        /// Контроллер для работы с видами спорта
+        /// </summary>
+        /// <param name="personService">Сервис для работы с видами спорта</param>
+        public PersonController(IPersonService personService)
+        {
+            this.personService = personService;
+        }
+
+        /// <summary>
         /// Создать человека
         /// </summary>
         /// <param name="request">Данные для создания</param>
         [HttpPost("")]
         public async Task<IActionResult> Create(CreatePersonDto request)
         {
+            await personService.Create(request.Name, request.Email, request.DateOfBirth);
             return Ok();
         }
 
@@ -27,31 +43,14 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Read()
         {
-            var response = new List<Person>()
+            var persons = await personService.Read();
+            var response = persons.Select(person => new
             {
-                new Person()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Дмитрий Дмитриевич Дмитриев",
-                    Email = "dima@dima.dima",
-                    DateOfBirth = new DateTime(2002, 5, 8, 0, 0, 0),
-                },
-                new Person()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Иван Иванович Иванов",
-                    Email = "ivan@ivan.ivan",
-                    DateOfBirth = new DateTime(2003, 6, 1, 0, 0, 0),
-                },
-                new Person()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Андрей Андреевич Андреев",
-                    Email = "andrey@andrey.andrey",
-                    DateOfBirth = new DateTime(1999, 10, 24, 0, 0, 0),
-                },
-            };
-
+                person.Id,
+                person.Name,
+                person.Email,
+                person.DateOfBirth,
+            });
             return Ok(response);
         }
 
@@ -62,14 +61,14 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> ReadById(Guid id)
         {
-            var response = new Person()
+            var person = await personService.ReadById(id);
+            var response = new
             {
-                Id = Guid.NewGuid(),
-                Name = "Дмитрий Дмитриевич Дмитриев",
-                Email = "dima@dima.dima",
-                DateOfBirth = new DateTime(2002, 5, 8, 0, 0, 0),
+                person.Id,
+                person.Name,
+                person.Email,
+                person.DateOfBirth,
             };
-
             return Ok(response);
         }
 
@@ -116,6 +115,7 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdatePersonDto request)
         {
+            await personService.Update(id, request.Name, request.Email, request.DateOfBirth);
             return Ok();
         }
 
@@ -126,6 +126,7 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
+            await personService.Delete(id);
             return Ok();
         }
     }

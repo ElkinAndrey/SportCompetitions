@@ -2,15 +2,24 @@
 using SportCompetitionsAPI.Service.Abstractions;
 using SportCompetitionsAPI.Service.Exceptions;
 using System.Data;
-using System.Xml.Linq;
 
 namespace SportCompetitionsAPI.Service.Services
 {
-    public class SportService : ISportService
+    /// <summary>
+    /// Сервис для работы с видами спорта. Использует ADO.NET
+    /// </summary>
+    public class ADOSportService : ISportService
     {
+        /// <summary>
+        /// Запросы к базе данных
+        /// </summary>
         private SqlQueries sqlQueries;
 
-        public SportService(SqlQueries sqlQueries) 
+        /// <summary>
+        /// Сервис для работы с видами спорта. Использует ADO.NET
+        /// </summary>
+        /// <param name="sqlQueries">Запросы к базе данных</param>
+        public ADOSportService(SqlQueries sqlQueries) 
         { 
             this.sqlQueries = sqlQueries;
         }

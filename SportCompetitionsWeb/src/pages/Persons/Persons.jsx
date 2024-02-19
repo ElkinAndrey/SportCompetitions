@@ -41,6 +41,7 @@ const Persons = () => {
     newNameChange("");
     newDateChange("");
     newEmailChange("");
+    fetchGet();
   };
 
   const [fetchGet, isLoadingfetchGet] = useFetching(getCallback);
@@ -127,7 +128,7 @@ const Persons = () => {
             className={classes.inputEmail}
           />
           <input
-            type="datetime-local"
+            type="date"
             value={newDate}
             onChange={(e) => newDateChange(e.target.value)}
             className={classes.inputDate}

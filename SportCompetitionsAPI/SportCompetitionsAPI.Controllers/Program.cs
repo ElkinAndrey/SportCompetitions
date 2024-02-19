@@ -13,7 +13,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<SqlQueries>();
-builder.Services.AddTransient<ISportService, SportService>();
+builder.Services.AddTransient<ISportService, ADOSportService>();
+builder.Services.AddTransient<IPersonService, ADOPersonService>();
 
 var app = builder.Build();
 
