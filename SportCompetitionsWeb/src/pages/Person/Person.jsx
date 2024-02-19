@@ -16,16 +16,16 @@ const Person = () => {
   const [isOpenModal, isOpenModalChange] = useState(false);
   const [person, personChange] = useState({});
   const [competitions, competitionsChange] = useState([]);
-  const [newPersonName, newPersonNameChange] = useState("");
-  const [newPersonEmail, newPersonEmailChange] = useState("");
-  const [newPersonDate, newPersonDateChange] = useState("");
+  const [newName, newNameChange] = useState("");
+  const [newEmail, newEmailChange] = useState("");
+  const [newDate, newDateChange] = useState("");
 
   const getByIdCallback = async (id) => {
     const response = await PersonApi.getById(id);
     personChange(response.data);
-    newPersonNameChange(response.data.name);
-    newPersonEmailChange(response.data.email);
-    newPersonDateChange(response.data.dateOfBirth);
+    newNameChange(response.data.name);
+    newEmailChange(response.data.email);
+    newDateChange(response.data.dateOfBirth);
   };
 
   const getCompetitionsCallback = async (id) => {
@@ -35,18 +35,18 @@ const Person = () => {
 
   const changeCallback = async () => {
     const p = {
-      name: newPersonName,
-      dateOfBirth: newPersonDate,
-      email: newPersonEmail,
+      name: newName,
+      dateOfBirth: newDate,
+      email: newEmail,
     };
     await PersonApi.change(params.id, p);
     isOpenModalChange(false);
-    const newCompetition = {
-      name: newPersonName,
-      dateOfBirth: newPersonDate,
-      email: newPersonEmail,
+    const newPerson = {
+      name: newName,
+      dateOfBirth: newDate,
+      email: newEmail,
     };
-    personChange(newCompetition);
+    personChange(newPerson);
   };
 
   const [fetchGetById, isLoadingGetById] = useFetching(getByIdCallback);
@@ -55,7 +55,7 @@ const Person = () => {
   );
   const [fetchChange, isLoadingChange] = useFetching(changeCallback);
 
-  const openModal = () => {
+  const change = () => {
     isOpenModalChange(true);
   };
 
@@ -70,7 +70,7 @@ const Person = () => {
       <ButtonImage
         src="/images/change.png"
         title="Изменить человека"
-        onClick={openModal}
+        onClick={change}
       />
     </div>
   );
@@ -120,21 +120,21 @@ const Person = () => {
         <div className={classes.modalBody}>
           <div className={classes.modalLogo}>Изменить человека</div>
           <Input
-            value={newPersonName}
-            setValue={newPersonNameChange}
+            value={newName}
+            setValue={newNameChange}
             placeholder="Имя"
             className={classes.inputName}
           />
           <Input
-            value={newPersonEmail}
-            setValue={newPersonEmailChange}
+            value={newEmail}
+            setValue={newEmailChange}
             placeholder="Email"
             className={classes.inputEmail}
           />
           <input
             type="datetime-local"
-            value={newPersonDate}
-            onChange={(e) => newPersonDateChange(e.target.value)}
+            value={newDate}
+            onChange={(e) => newDateChange(e.target.value)}
             className={classes.inputDate}
           />
           <Button

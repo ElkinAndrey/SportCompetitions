@@ -23,16 +23,16 @@ const Competition = () => {
   const [deletedId, deletedIdChange] = useState(null);
   const [addId, addIdChange] = useState(null);
   const [sports, sportsChange] = useState([]);
-  const [newCompetitionsName, newCompetitionsNameChange] = useState("");
-  const [newCompetitionsDate, newCompetitionsDateChange] = useState("");
-  const [newCompetitionsSport, newCompetitionsSportChange] = useState(null);
+  const [newName, newCompetitionsNameChange] = useState("");
+  const [newDate, newDateChange] = useState("");
+  const [newSport, newSportChange] = useState(null);
 
   const getByIdCallback = async (id) => {
     const response = await CompetitionApi.getById(id);
     competitionChange(response.data);
     newCompetitionsNameChange(response.data.name);
-    newCompetitionsDateChange(response.data.date);
-    newCompetitionsSportChange(response.data.sport.id);
+    newDateChange(response.data.date);
+    newSportChange(response.data.sport.id);
   };
 
   const getPersonsCallback = async (id) => {
@@ -58,7 +58,6 @@ const Competition = () => {
 
   const addToCompetitionCallback = async (personId) => {
     await CompetitionApi.addToCompetition(params.id, personId);
-
     let addedPerson =
       personsNot[personsNot.findIndex((p) => p.id === personId)];
     personsChange([addedPerson, ...persons]);
@@ -79,17 +78,16 @@ const Competition = () => {
 
   const changeCallback = async () => {
     const p = {
-      name: newCompetitionsName,
-      date: newCompetitionsDate,
-      sportId: newCompetitionsSport,
+      name: newName,
+      date: newDate,
+      sportId: newSport,
     };
     await CompetitionApi.change(params.id, p);
     isOpenModalChange(false);
-    const sport =
-      sports[sports.findIndex((p) => p.value === newCompetitionsSport)];
+    const sport = sports[sports.findIndex((p) => p.value === newSport)];
     const newCompetition = {
-      name: newCompetitionsName,
-      date: newCompetitionsDate,
+      name: newName,
+      date: newDate,
       sport: { id: sport.value, name: sport.name },
     };
     competitionChange(newCompetition);
@@ -120,7 +118,7 @@ const Competition = () => {
     fetchAddToCompetition(id);
   };
 
-  const openModal = () => {
+  const change = () => {
     isOpenModalChange(true);
   };
 
@@ -137,7 +135,7 @@ const Competition = () => {
       <ButtonImage
         src="/images/change.png"
         title="Изменить соревнование"
-        onClick={openModal}
+        onClick={change}
       />
     </div>
   );
@@ -233,20 +231,20 @@ const Competition = () => {
         <div className={classes.modalBody}>
           <div className={classes.modalLogo}>Изменить соревнование</div>
           <Input
-            value={newCompetitionsName}
+            value={newName}
             setValue={newCompetitionsNameChange}
             placeholder="Название"
             className={classes.inputName}
           />
           <input
             type="datetime-local"
-            value={newCompetitionsDate}
-            onChange={(e) => newCompetitionsDateChange(e.target.value)}
+            value={newDate}
+            onChange={(e) => newDateChange(e.target.value)}
             className={classes.inputDate}
           />
           <Select
-            value={newCompetitionsSport}
-            onChange={newCompetitionsSportChange}
+            value={newSport}
+            onChange={newSportChange}
             options={sports}
             startName={"Спорт"}
             placeholder={"Вид спорта"}

@@ -17,9 +17,9 @@ const Competitions = () => {
   const [deletedId, deletedIdChange] = useState(null);
   const [competitions, competitionsChange] = useState([]);
   const [sports, sportsChange] = useState([]);
-  const [newCompetitionsName, newCompetitionsNameChange] = useState("");
-  const [newCompetitionsDate, newCompetitionsDateChange] = useState("");
-  const [newCompetitionsSport, newCompetitionsSportChange] = useState(null);
+  const [newName, newCompetitionsNameChange] = useState("");
+  const [newDate, newCompetitionsDateChange] = useState("");
+  const [newSportId, newSportIdChange] = useState(null);
 
   const getCallback = async () => {
     const response = await CompetitionApi.get();
@@ -45,15 +45,15 @@ const Competitions = () => {
 
   const addCallback = async () => {
     const params = {
-      name: newCompetitionsName,
-      date: newCompetitionsDate,
-      sportId: newCompetitionsSport,
+      name: newName,
+      date: newDate,
+      sportId: newSportId,
     };
     await CompetitionApi.add(params);
     isOpenModalChange(false);
     newCompetitionsNameChange("");
     newCompetitionsDateChange("");
-    newCompetitionsSportChange("");
+    newSportIdChange("");
     fetchGet();
   };
 
@@ -69,7 +69,7 @@ const Competitions = () => {
     fetchDelete(id);
   };
 
-  const openModal = () => {
+  const add = () => {
     isOpenModalChange(true);
   };
 
@@ -82,7 +82,7 @@ const Competitions = () => {
     <HeaderAdd
       text="Соревнования"
       className={classes.header}
-      onClick={openModal}
+      onClick={add}
       title="Добавить соревнование"
     />
   );
@@ -132,20 +132,20 @@ const Competitions = () => {
         <div className={classes.modalBody}>
           <div className={classes.modalLogo}>Добавить соревнование</div>
           <Input
-            value={newCompetitionsName}
+            value={newName}
             setValue={newCompetitionsNameChange}
             placeholder="Название"
             className={classes.inputName}
           />
           <input
             type="datetime-local"
-            value={newCompetitionsDate}
+            value={newDate}
             onChange={(e) => newCompetitionsDateChange(e.target.value)}
             className={classes.inputDate}
           />
           <Select
-            value={newCompetitionsSport}
-            onChange={newCompetitionsSportChange}
+            value={newSportId}
+            onChange={newSportIdChange}
             options={sports}
             startName={"Спорт"}
             placeholder={"Вид спорта"}

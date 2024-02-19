@@ -29,9 +29,9 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         {
             var response = new List<Sport>()
             {
-                new Sport() { Id = Guid.NewGuid(), Name = "Волейбол", Description = "" },
-                new Sport() { Id = Guid.NewGuid(), Name = "Футбол", Description = "" },
-                new Sport() { Id = Guid.NewGuid(), Name = "Баскетбол", Description = "" },
+                new Sport() { Id = Guid.NewGuid(), Name = "Волейбол", Description = "Волейбол описание" },
+                new Sport() { Id = Guid.NewGuid(), Name = "Футбол", Description = "Футбол описание" },
+                new Sport() { Id = Guid.NewGuid(), Name = "Баскетбол", Description = "Баскетбол описание" },
             };
 
             return Ok(response);

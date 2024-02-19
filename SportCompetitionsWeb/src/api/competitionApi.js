@@ -47,8 +47,7 @@ class CompetitionApi {
   }
 
   static async change(id, params) {
-    const response = await axios.put(`${URL}/${id}`, params);
-    return response;
+    await axios.put(`${URL}/${id}`, params);
   }
 }
 

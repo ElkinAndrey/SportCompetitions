@@ -14,36 +14,33 @@ const Persons = () => {
   const [isOpenModal, isOpenModalChange] = useState(false);
   const [deletedId, deletedIdChange] = useState(null);
   const [persons, personsChange] = useState([]);
-  const [newPersonName, newPersonNameChange] = useState("");
-  const [newPersonEmail, newPersonEmailChange] = useState("");
-  const [newPersonDate, newPersonDateChange] = useState("");
+  const [newName, newNameChange] = useState("");
+  const [newEmail, newEmailChange] = useState("");
+  const [newDate, newDateChange] = useState("");
 
   const getCallback = async () => {
     const response = await PersonApi.get();
     personsChange(response.data);
-    console.log(response.data);
   };
 
   const deleteCallback = async (id) => {
     await PersonApi.delete(id);
-    const newCompetitions = persons.filter(
-      (competition) => competition.id !== id
-    );
-    personsChange([...newCompetitions]);
+    const newPersons = persons.filter((competition) => competition.id !== id);
+    personsChange([...newPersons]);
     deletedIdChange(null);
   };
 
   const addCallback = async () => {
-    const params = {
-      name: newPersonName,
-      dateOfBirth: newPersonDate,
-      email: newPersonEmail,
+    const p = {
+      name: newName,
+      dateOfBirth: newDate,
+      email: newEmail,
     };
-    await PersonApi.add(params);
+    await PersonApi.add(p);
     isOpenModalChange(false);
-    newPersonNameChange("");
-    newPersonDateChange("");
-    newPersonEmailChange("");
+    newNameChange("");
+    newDateChange("");
+    newEmailChange("");
   };
 
   const [fetchGet, isLoadingfetchGet] = useFetching(getCallback);
@@ -56,7 +53,7 @@ const Persons = () => {
     fetchDelete(id);
   };
 
-  const openModal = () => {
+  const add = () => {
     isOpenModalChange(true);
   };
 
@@ -68,7 +65,7 @@ const Persons = () => {
     <HeaderAdd
       text="Люди"
       className={classes.header}
-      onClick={openModal}
+      onClick={add}
       title="Добавить человека"
     />
   );
@@ -118,21 +115,21 @@ const Persons = () => {
         <div className={classes.modalBody}>
           <div className={classes.modalLogo}>Добавить человека</div>
           <Input
-            value={newPersonName}
-            setValue={newPersonNameChange}
+            value={newName}
+            setValue={newNameChange}
             placeholder="Имя"
             className={classes.inputName}
           />
           <Input
-            value={newPersonEmail}
-            setValue={newPersonEmailChange}
+            value={newEmail}
+            setValue={newEmailChange}
             placeholder="Email"
             className={classes.inputEmail}
           />
           <input
             type="datetime-local"
-            value={newPersonDate}
-            onChange={(e) => newPersonDateChange(e.target.value)}
+            value={newDate}
+            onChange={(e) => newDateChange(e.target.value)}
             className={classes.inputDate}
           />
           <Button
