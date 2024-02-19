@@ -4,9 +4,9 @@ using System.Data;
 namespace SportCompetitionsAPI.Service
 {
     /// <summary>
-    /// Класс для выполениня запростов к базе данных
+    /// Выполенине запростов к базе данных
     /// </summary>
-    public class SqlQueries
+    public class SqlQueries : ISqlQueries
     {
         /// <summary>
         /// Объект для доступа к базе данных
@@ -23,11 +23,6 @@ namespace SportCompetitionsAPI.Service
             this.connection = new SqlConnection(connectionString);
         }
 
-        /// <summary>
-        /// Метод для получения таблицы из базы данных
-        /// </summary>
-        /// <param name="queryString">Строка запроса</param>
-        /// <returns>Таблица с данными</returns>
         public async Task<DataTable> QuerySelectAsync(string queryString)
         {
             await Console.Out.WriteLineAsync(queryString);
@@ -41,11 +36,6 @@ namespace SportCompetitionsAPI.Service
             return req;
         }
 
-        /// <summary>
-        /// Метод для изменения базы данных
-        /// </summary>
-        /// <param name="queryString">Строка запроса</param>
-        /// <returns>Количество выполненных запросов</returns>
         public async Task<int> QueryChangesAsync(string queryString)
         {
             await Console.Out.WriteLineAsync(queryString);

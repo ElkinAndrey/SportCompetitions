@@ -12,7 +12,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddTransient<SqlQueries>();
+builder.Services.AddTransient<ISqlQueries, SqlQueries>();
 builder.Services.AddTransient<ISportService, ADOSportService>();
 builder.Services.AddTransient<IPersonService, ADOPersonService>();
 builder.Services.AddTransient<ICompetitionService, ADOCompetitionService>();

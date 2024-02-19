@@ -107,13 +107,13 @@ const Competition = () => {
   const [fetchChange, isLoadingChange] = useFetching(changeCallback);
 
   const del = (id) => {
-    if (isLoadingDeleteFromCompetition) return;
+    if (isLoadingDeleteFromCompetition || isLoadingAddToCompetition) return;
     deletedIdChange(id);
     fetchDeleteFromCompetition(id);
   };
 
   const add = (id) => {
-    if (isLoadingAddToCompetition) return;
+    if (isLoadingDeleteFromCompetition || isLoadingAddToCompetition) return;
     addIdChange(id);
     fetchAddToCompetition(id);
   };
