@@ -14,6 +14,11 @@ class PersonApi {
     return response;
   }
 
+  static async getCompetitionsById(id) {
+    const response = await axios.get(`${URL}/${id}/competition`);
+    return response;
+  }
+
   static async add(params) {
     await axios.post(`${URL}`, params);
   }
