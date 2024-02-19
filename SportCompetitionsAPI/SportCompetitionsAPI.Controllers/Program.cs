@@ -1,5 +1,7 @@
 using SportCompetitionsAPI.Controllers.Middlewares;
 using SportCompetitionsAPI.Service;
+using SportCompetitionsAPI.Service.Abstractions;
+using SportCompetitionsAPI.Service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<SqlQueries>();
+builder.Services.AddTransient<ISportService, SportService>();
 
 var app = builder.Build();
 

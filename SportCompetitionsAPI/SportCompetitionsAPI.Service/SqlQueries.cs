@@ -28,28 +28,33 @@ namespace SportCompetitionsAPI.Service
         /// </summary>
         /// <param name="queryString">Строка запроса</param>
         /// <returns>Таблица с данными</returns>
-        public DataTable QuerySelect(string queryString)
+        public async Task<DataTable> QuerySelectAsync(string queryString)
         {
-            Console.WriteLine(queryString);
-            SqlDataAdapter adapter = new SqlDataAdapter(queryString, connection);
-            DataSet ds = new DataSet();
-            adapter.Fill(ds);
-            return ds.Tables[0];
+            var req = await Task.Run(() =>
+            {
+                SqlDataAdapter adapter = new SqlDataAdapter(queryString, connection);
+                DataSet ds = new DataSet();
+                adapter.Fill(ds);
+                return ds.Tables[0];
+            });
+            return req;
         }
 
         /// <summary>
         /// Метод для изменения базы данных
         /// </summary>
         /// <param name="queryString">Строка запроса</param>
-        public void QueryChanges(string queryString)
+        /// <returns>Количество выполненных запросов</returns>
+        public async Task<int> QueryChangesAsync(string queryString)
         {
-            Console.WriteLine(queryString);
-            connection.Open();
+            int numberCompletedRequests = 0;
+            await connection.OpenAsync();
             using (SqlCommand cmd = new SqlCommand(queryString, connection))
             {
-                cmd.ExecuteNonQuery();
+                numberCompletedRequests = await cmd.ExecuteNonQueryAsync();
             }
-            connection.Close();
+            await connection.CloseAsync();
+            return numberCompletedRequests;
         }
     }
 }

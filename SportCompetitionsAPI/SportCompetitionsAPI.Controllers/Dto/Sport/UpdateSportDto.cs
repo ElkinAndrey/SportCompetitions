@@ -3,9 +3,9 @@
     /// <summary>
     /// Данные для изменения вида спорта
     /// </summary>
-    /// <param name="name">Назване</param>
-    /// <param name="description">Описание</param>
+    /// <param name="Name">Назване</param>
+    /// <param name="Description">Описание</param>
     public sealed record class UpdateSportDto(
-        string name = "",
-        string description = "");
+        string Name = "",
+        string Description = "");
 }

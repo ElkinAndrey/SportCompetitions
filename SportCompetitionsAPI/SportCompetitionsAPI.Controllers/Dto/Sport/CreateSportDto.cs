@@ -6,6 +6,6 @@
     /// <param name="name">Назване</param>
     /// <param name="description">Описание</param>
     public sealed record class CreateSportDto(
-        string name = "",
-        string description = "");
+        string Name = "",
+        string Description = "");
 }

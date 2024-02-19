@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using SportCompetitionsAPI.Controllers.Dto.Sport;
 using SportCompetitionsAPI.Domain.Entities;
+using SportCompetitionsAPI.Service.Abstractions;
+using System.Xml.Linq;
 
 namespace SportCompetitionsAPI.Controllers.Controllers
 {
@@ -12,12 +15,27 @@ namespace SportCompetitionsAPI.Controllers.Controllers
     public class SportController : ControllerBase
     {
         /// <summary>
+        /// Сервис для работы с видами спорта
+        /// </summary>
+        private ISportService sportService;
+
+        /// <summary>
+        /// Контроллер для работы с видами спорта
+        /// </summary>
+        /// <param name="sportService">Сервис для работы с видами спорта</param>
+        public SportController(ISportService sportService)
+        {
+            this.sportService = sportService;
+        }
+
+        /// <summary>
         /// Создать спорт
         /// </summary>
         /// <param name="request">Данные для создания</param>
         [HttpPost("")]
         public async Task<IActionResult> Create(CreateSportDto request)
         {
+            await sportService.Create(request.Name, request.Description);
             return Ok();
         }
 
@@ -27,25 +45,13 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Read()
         {
-            var response = new List<Sport>()
+            var sports = await sportService.Read();
+            var response = sports.Select(sport => new
             {
-                new Sport() { Id = Guid.NewGuid(), Name = "Волейбол", Description = "Волейбол описание" },
-                new Sport() { Id = Guid.NewGuid(), Name = "Футбол", Description = "Футбол описание" },
-                new Sport() { Id = Guid.NewGuid(), Name = "Баскетбол", Description = "Баскетбол описание" },
-            };
-
-            return Ok(response);
-        }
-
-        /// <summary>
-        /// Получить вид спорта
-        /// </summary>
-        /// <param name="id">Id спорта</param>
-        [HttpGet("{id}")]
-        public async Task<IActionResult> ReadById(Guid id)
-        {
-            var response = new Sport() { Id = Guid.NewGuid(), Name = "Волейбол", Description = "" };
-
+                sport.Id,
+                sport.Name,
+                sport.Description,
+            });
             return Ok(response);
         }
 
@@ -57,6 +63,7 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdateSportDto request)
         {
+            await sportService.Update(id, request.Name, request.Description);
             return Ok();
         }
 
@@ -67,6 +74,7 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
+            await sportService.Delete(id);
             return Ok();
         }
     }
