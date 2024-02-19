@@ -54,6 +54,7 @@ const Competitions = () => {
     newCompetitionsNameChange("");
     newCompetitionsDateChange("");
     newCompetitionsSportChange("");
+    fetchGet();
   };
 
   const [fetchGet, isLoadingfetchGet] = useFetching(getCallback);

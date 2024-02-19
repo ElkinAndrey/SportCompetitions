@@ -1,0 +1,45 @@
+.header {
+  margin-bottom: 15px;
+}
+
+.tableName {
+}
+
+.tableDate {
+  text-align: center;
+  min-width: 150px;
+}
+
+.tableSport {
+  text-align: center;
+  min-width: 120px;
+}
+
+.tableButton {
+  width: 80px;
+}
+
+.modalBody {
+  padding: 30px;
+  border-radius: 20px;
+  border: 1px #f6f8fa solid;
+  background-color: #ffffff;
+  width: 400px;
+}
+
+.modalLogo {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.inputName {
+  margin-bottom: 18px;
+}
+
+.inputEmail {
+  margin-bottom: 18px;
+}
+
+.inputDate {
+  margin-bottom: 20px;
+}
