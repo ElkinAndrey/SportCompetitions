@@ -44,18 +44,57 @@ namespace SportCompetitionsAPI.Service.Services
             if (count == 0) throw new PersonNotFoundException();
         }
 
-        public async Task<IEnumerable<Person>> Read(Guid? competitionId = null)
+        public async Task<IEnumerable<Person>> Read(
+            Guid? competitionId = null,
+            bool isParticipatingInCompetition = true,
+            bool isNotParticipatingInCompetition = false)
         {
-            var persons = new List<Person>();
-            string query = @$"
-                SELECT 
-                    [Id],
-                    [Name],
-                    [Email],
-                    [DateOfBirth]
-                FROM [Person]
-            ";
+            string query;
+            if (competitionId is null || (isParticipatingInCompetition && isNotParticipatingInCompetition))
+                query = @$"
+                    SELECT 
+                        [Id],
+                        [Name],
+                        [Email],
+                        [DateOfBirth]
+                    FROM [Person]
+                ";
+            else if (isParticipatingInCompetition)
+                query = @$"
+                    SELECT 
+                        [Person].[Id] AS [Id],
+                        [Person].[Name] AS [Name],
+                        [Person].[Email] AS [Email],
+                        [Person].[DateOfBirth] AS [DateOfBirth]
+                    FROM [PersonCompetition]
+                    LEFT JOIN [Person] ON 
+	                    [PersonCompetition].[PersonId]=[Person].[Id]
+                    WHERE [PersonCompetition].[CompetitionId] = '{competitionId}'
+                ";
+            else if (isNotParticipatingInCompetition)
+                query = @$"
+                    SELECT 
+                        [Person].[Id] AS [Id],
+                        [Person].[Name] AS [Name],
+                        [Person].[Email] AS [Email],
+                        [Person].[DateOfBirth] AS [DateOfBirth]
+                    FROM [Person]
+                    EXCEPT
+                    SELECT 
+                        [Person].[Id] AS [Id],
+                        [Person].[Name] AS [Name],
+                        [Person].[Email] AS [Email],
+                        [Person].[DateOfBirth] AS [DateOfBirth]
+                    FROM [PersonCompetition]
+                    LEFT JOIN [Person] ON 
+	                    [PersonCompetition].[PersonId]=[Person].[Id]
+                    WHERE [PersonCompetition].[CompetitionId] = '{competitionId}'
+                ";
+            else
+                return new List<Person>();
+
             DataTable dataTable = await sqlQueries.QuerySelectAsync(query);
+            var persons = new List<Person>();
             foreach (DataRow row in dataTable.Rows)
             {
                 var person = GetPersonByRow(row);

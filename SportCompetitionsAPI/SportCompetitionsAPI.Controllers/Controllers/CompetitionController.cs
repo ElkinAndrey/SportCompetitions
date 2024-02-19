@@ -13,6 +13,11 @@ namespace SportCompetitionsAPI.Controllers.Controllers
     public class CompetitionController : ControllerBase
     {
         /// <summary>
+        /// Сервис для работы с видами спорта
+        /// </summary>
+        private IPersonService personService;
+
+        /// <summary>
         /// Сервис для работы с соревнованиями
         /// </summary>
         private ICompetitionService competitionService;
@@ -20,9 +25,11 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         /// <summary>
         /// Контроллер для работы с соревнованиями
         /// </summary>
+        /// <param name="personService">Сервис для работы с видами спорта</param>
         /// <param name="competitionService">Сервис для работы с соревнованиями</param>
-        public CompetitionController(ICompetitionService competitionService)
+        public CompetitionController(IPersonService personService, ICompetitionService competitionService)
         {
+            this.personService = personService;
             this.competitionService = competitionService;
         }
 
@@ -87,31 +94,14 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         [HttpGet("{id}/persons")]
         public async Task<IActionResult> ReadPersonsById(Guid id)
         {
-            var response = new List<Person>()
+            var persons = await personService.Read(id);
+            var response = persons.Select(person => new
             {
-                new Person()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Дмитрий Дмитриевич Дмитриев",
-                    Email = "dima@dima.dima",
-                    DateOfBirth = new DateTime(2002, 5, 8, 0, 0, 0),
-                },
-                new Person()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Иван Иванович Иванов",
-                    Email = "ivan@ivan.ivan",
-                    DateOfBirth = new DateTime(2003, 6, 1, 0, 0, 0),
-                },
-                new Person()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Андрей Андреевич Андреев",
-                    Email = "andrey@andrey.andrey",
-                    DateOfBirth = new DateTime(1999, 10, 24, 0, 0, 0),
-                },
-            };
-
+                Id = person.Id,
+                Name = person.Name,
+                Email = person.Email,
+                DateOfBirth = person.DateOfBirth,
+            });
             return Ok(response);
         }
 
@@ -122,24 +112,14 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         [HttpGet("{id}/persons/not")]
         public async Task<IActionResult> ReadNotParticipatingPersonsById(Guid id)
         {
-            var response = new List<Person>()
+            var persons = await personService.Read(id, false, true);
+            var response = persons.Select(person => new
             {
-                new Person()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Иван Иванович Иванов",
-                    Email = "ivan@ivan.ivan",
-                    DateOfBirth = new DateTime(2003, 6, 1, 0, 0, 0),
-                },
-                new Person()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Андрей Андреевич Андреев",
-                    Email = "andrey@andrey.andrey",
-                    DateOfBirth = new DateTime(1999, 10, 24, 0, 0, 0),
-                },
-            };
-
+                Id = person.Id,
+                Name = person.Name,
+                Email = person.Email,
+                DateOfBirth = person.DateOfBirth,
+            });
             return Ok(response);
         }
 

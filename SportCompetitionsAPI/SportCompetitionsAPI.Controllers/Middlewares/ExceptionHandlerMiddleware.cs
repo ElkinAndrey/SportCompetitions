@@ -46,6 +46,11 @@ namespace SportCompetitionsAPI.Controllers.Middlewares
             if (exception is PersonNotFoundException)
                 return CreateError(context, 404, exception);
 
+            if (exception is PersonAlreadyInCompetition)
+                return CreateError(context, 409, exception);
+            if (exception is PersonNoLongerInCompetition)
+                return CreateError(context, 409, exception);
+
             return CreateError(context, 500, exception);
         }
 

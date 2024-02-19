@@ -18,7 +18,10 @@ namespace SportCompetitionsAPI.Service.Abstractions
         /// <summary>
         /// Получить список людей
         /// </summary>
-        Task<IEnumerable<Person>> Read(Guid? competitionId = null);
+        Task<IEnumerable<Person>> Read(
+            Guid? competitionId = null,
+            bool isParticipatingInCompetition = true,
+            bool isNotParticipatingInCompetition = false);
 
         /// <summary>
         /// Получить человека по id

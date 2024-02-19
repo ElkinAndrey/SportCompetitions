@@ -18,12 +18,19 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         private IPersonService personService;
 
         /// <summary>
+        /// Сервис для работы с соревнованиями
+        /// </summary>
+        private ICompetitionService competitionService;
+
+        /// <summary>
         /// Контроллер для работы с видами спорта
         /// </summary>
         /// <param name="personService">Сервис для работы с видами спорта</param>
-        public PersonController(IPersonService personService)
+        /// <param name="competitionService">Сервис для работы с соревнованиями</param>
+        public PersonController(IPersonService personService, ICompetitionService competitionService)
         {
             this.personService = personService;
+            this.competitionService = competitionService;
         }
 
         /// <summary>
@@ -79,31 +86,18 @@ namespace SportCompetitionsAPI.Controllers.Controllers
         [HttpGet("{id}/competition")]
         public async Task<IActionResult> ReadCompetitionById(Guid id)
         {
-            var response = new List<Competition>()
+            var competitions = await competitionService.Read(id);
+            var response = competitions.Select(competition => new
             {
-                new Competition()
+                Id = competition.Id,
+                Name = competition.Name,
+                Date = competition.Date,
+                Sport = new
                 {
-                    Id = Guid.NewGuid(),
-                    Name = "Открытый турнир по Брейкингу 1х1 среди новичков и продолжающих",
-                    Date = new DateTime(2024, 2, 16, 20, 30, 0),
-                    Sport = new Sport() { Id = Guid.NewGuid(), Name = "Волейбол", Description = "" },
-                },
-                new Competition()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Матч по гандболу \"Пермские медведи\" - \"Зенит\"",
-                    Date = new DateTime(2024, 2, 18, 20, 0, 0),
-                    Sport = new Sport() { Id = Guid.NewGuid(), Name = "Футбол", Description = "" },
-                },
-                new Competition()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Спортивные мероприятия на катке у \"Театра-Театра\"",
-                    Date = new DateTime(2024, 2, 20, 16, 0, 0),
-                    Sport = new Sport() { Id = Guid.NewGuid(), Name = "Баскетбол", Description = "" },
-                },
-            };
-
+                    Id = competition.Sport.Id,
+                    Name = competition.Sport.Name,
+                }
+            });
             return Ok(response);
         }
 
