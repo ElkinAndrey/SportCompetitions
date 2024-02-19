@@ -13,13 +13,13 @@ namespace SportCompetitionsAPI.Service.Services
         /// <summary>
         /// Запросы к базе данных
         /// </summary>
-        private SqlQueries sqlQueries;
+        private ISqlQueries sqlQueries;
 
         /// <summary>
         /// Сервис для работы с видами спорта. Использует ADO.NET
         /// </summary>
         /// <param name="sqlQueries">Запросы к базе данных</param>
-        public ADOSportService(SqlQueries sqlQueries) 
+        public ADOSportService(ISqlQueries sqlQueries) 
         { 
             this.sqlQueries = sqlQueries;
         }
