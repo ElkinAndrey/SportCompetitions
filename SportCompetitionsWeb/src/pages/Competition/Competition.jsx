@@ -204,7 +204,7 @@ const Competition = () => {
             <th>Email</th>
             <th>День рождения</th>
             <th>Открыть</th>
-            <th>Исключить</th>
+            <th>Добавить</th>
           </tr>
         </thead>
         <tbody>

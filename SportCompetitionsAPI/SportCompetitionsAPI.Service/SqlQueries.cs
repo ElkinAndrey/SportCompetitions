@@ -1,5 +1,6 @@
 ﻿using System.Data.SqlClient;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace SportCompetitionsAPI.Service
 {
@@ -16,10 +17,9 @@ namespace SportCompetitionsAPI.Service
         /// <summary>
         /// Конструктор
         /// </summary>
-        public SqlQueries()
+        public SqlQueries(IConfiguration configuration)
         {
-            string connectionString =
-                "Server = (localdb)\\mssqllocaldb; Database = SportCompetitions; Trusted_Connection = True";
+            string connectionString = configuration.GetSection("AppSettings:ConnectionString").Value!;
             this.connection = new SqlConnection(connectionString);
         }
 
