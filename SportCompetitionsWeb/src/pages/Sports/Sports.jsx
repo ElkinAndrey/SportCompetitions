@@ -8,6 +8,7 @@ import useFetching from "../../hooks/useFetching";
 import SportApi from "../../api/sportApi";
 import Input from "../../views/Input/Input";
 import Button from "../../views/Button/Button";
+import If from "../../views/If/If";
 
 const Sports = () => {
   const [isAddOpenModal, isAddOpenModalChange] = useState(false);
@@ -15,9 +16,11 @@ const Sports = () => {
   const [deletedId, deletedIdChange] = useState(null);
   const [sports, sportsChange] = useState([]);
   const [newName, newNameChange] = useState("");
+  const [newNameError, newNameErrorChange] = useState(false);
   const [newDescription, newDescriptionChange] = useState("");
   const [changeId, changeIdChange] = useState("");
   const [changeName, changeNameChange] = useState("");
+  const [changeNameError, changeNameErrorChange] = useState(false);
   const [changeDescription, changeDescriptionChange] = useState("");
 
   const getCallback = async () => {
@@ -68,8 +71,17 @@ const Sports = () => {
     fetchDelete(id);
   };
 
-  const add = () => {
+  const addOpen = () => {
     isAddOpenModalChange(true);
+  };
+
+  const add = () => {
+    if (newName === "" || newName === null || newName === undefined) {
+      newNameErrorChange(true);
+    } else {
+      fetchAdd();
+      newNameErrorChange(false);
+    }
   };
 
   const change = (competition) => {
@@ -87,7 +99,7 @@ const Sports = () => {
     <HeaderAdd
       text="Виды спорта"
       className={classes.header}
-      onClick={add}
+      onClick={addOpen}
       title="Добавить вид спорта"
     />
   );
@@ -139,6 +151,7 @@ const Sports = () => {
             setValue={newNameChange}
             placeholder="Название"
             className={classes.inputName}
+            error={newNameError}
           />
           <Input
             value={newDescription}
@@ -150,7 +163,7 @@ const Sports = () => {
             text={"Добавить"}
             className={classes.addButton}
             isLoading={isLoadingAdd}
-            onClick={fetchAdd}
+            onClick={add}
           />
         </div>
       </Modal>

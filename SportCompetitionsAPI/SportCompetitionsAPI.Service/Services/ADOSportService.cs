@@ -1,5 +1,6 @@
 ﻿using SportCompetitionsAPI.Domain.Entities;
 using SportCompetitionsAPI.Service.Abstractions;
+using SportCompetitionsAPI.Service.ADO;
 using SportCompetitionsAPI.Service.Exceptions;
 using System.Data;
 
@@ -19,8 +20,8 @@ namespace SportCompetitionsAPI.Service.Services
         /// Сервис для работы с видами спорта. Использует ADO.NET
         /// </summary>
         /// <param name="sqlQueries">Запросы к базе данных</param>
-        public ADOSportService(ISqlQueries sqlQueries) 
-        { 
+        public ADOSportService(ISqlQueries sqlQueries)
+        {
             this.sqlQueries = sqlQueries;
         }
 
@@ -28,18 +29,27 @@ namespace SportCompetitionsAPI.Service.Services
         {
             string query = @$"
                 INSERT INTO [Sport] ([Name], [Description]) 
-                VALUES (N'{name}', N'{description}')
+                VALUES (@name, @description)
             ";
-            await sqlQueries.QueryChangesAsync(query);
+            var parameters = new List<SqlValues>()
+            {
+                new SqlValues { Name = "@name", Value = name },
+                new SqlValues { Name = "@description", Value = description },
+            };
+            await sqlQueries.QueryChangesAsync(query, parameters);
         }
 
         public async Task Delete(Guid id)
         {
             string query = @$"
                 DELETE FROM [Sport] 
-                WHERE [Id] = '{id}'     
+                WHERE [Id] = @id     
             ";
-            int count = await sqlQueries.QueryChangesAsync(query);
+            var parameters = new List<SqlValues>()
+            {
+                new SqlValues { Name = "@id", Value = id },
+            };
+            int count = await sqlQueries.QueryChangesAsync(query, parameters);
             if (count == 0) throw new SportNotFoundException();
         }
 
@@ -66,10 +76,16 @@ namespace SportCompetitionsAPI.Service.Services
         {
             string query = @$"
                 UPDATE [Sport] 
-                SET [Name]=N'{name}', [Description]=N'{description}'
-                WHERE [Id] = '{id}'
+                SET [Name]=@name, [Description]=@description
+                WHERE [Id] = @id
             ";
-            int count = await sqlQueries.QueryChangesAsync(query);
+            var parameters = new List<SqlValues>()
+            {
+                new SqlValues { Name = "@id", Value = id },
+                new SqlValues { Name = "@name", Value = name },
+                new SqlValues { Name = "@description", Value = description },
+            };
+            int count = await sqlQueries.QueryChangesAsync(query, parameters);
             if (count == 0) throw new SportNotFoundException();
         }
 

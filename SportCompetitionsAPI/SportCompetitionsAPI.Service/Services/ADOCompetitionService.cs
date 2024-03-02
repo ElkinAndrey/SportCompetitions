@@ -4,9 +4,7 @@ using SportCompetitionsAPI.Service.Exceptions;
 using SportCompetitionsAPI.Service.Functions;
 using System.Data;
 using System.Data.SqlClient;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Xml.Linq;
-using System.Security.Cryptography.X509Certificates;
+using SportCompetitionsAPI.Service.ADO;
 
 namespace SportCompetitionsAPI.Service.Services
 {
@@ -33,11 +31,17 @@ namespace SportCompetitionsAPI.Service.Services
         {
             string query = @$"
                 INSERT INTO [Competition] ([Name], [Date], [SportId])
-                VALUES (N'{name}', '{SqlConvert.Date(date)}', '{sportId}')
+                VALUES (@name, @date, @sportId)
             ";
+            var parameters = new List<SqlValues>()
+            {
+                new SqlValues { Name = "@name", Value = name },
+                new SqlValues { Name = "@date", Value = date },
+                new SqlValues { Name = "@sportId", Value = sportId },
+            };
             try
             {
-                await sqlQueries.QueryChangesAsync(query);
+                await sqlQueries.QueryChangesAsync(query, parameters);
             }
             catch (SqlException)
             {
@@ -49,9 +53,13 @@ namespace SportCompetitionsAPI.Service.Services
         {
             string query = @$"
                 DELETE FROM [Competition] 
-                WHERE [Id] = '{id}'
+                WHERE [Id] = @id
             ";
-            int count = await sqlQueries.QueryChangesAsync(query);
+            var parameters = new List<SqlValues>()
+            {
+                new SqlValues { Name = "@id", Value = id },
+            };
+            int count = await sqlQueries.QueryChangesAsync(query, parameters);
             if (count == 0) throw new CompetitionNotFoundException();
         }
 
@@ -60,27 +68,41 @@ namespace SportCompetitionsAPI.Service.Services
             string querySearchCompetition = @$"
                 SELECT [Id]
                 FROM [Competition]
-                WHERE [Competition].[Id] = '{competitionId}'
+                WHERE [Competition].[Id] = @competitionId
             ";
-            var dataTableCompetition = await sqlQueries.QuerySelectAsync(querySearchCompetition);
-            if (dataTableCompetition.Rows.Count == 0) throw new CompetitionNotFoundException(); 
+            var parametersSearchCompetition = new List<SqlValues>()
+            {
+                new SqlValues { Name = "@competitionId", Value = competitionId! },
+            };
+            var dataTableCompetition = await sqlQueries.QuerySelectAsync(querySearchCompetition, parametersSearchCompetition);
+            if (dataTableCompetition.Rows.Count == 0) throw new CompetitionNotFoundException();
             string querySearchPerson = @$"
                 SELECT [Id]
                 FROM [Person]
-                WHERE [Person].[Id] = '{personId}'
+                WHERE [Person].[Id] = @personId
             ";
-            var dataTablePerson = await sqlQueries.QuerySelectAsync(querySearchPerson);
-            if (dataTablePerson.Rows.Count == 0) throw new PersonNotFoundException();
-            
+            var parametersSearchPerson = new List<SqlValues>()
+            {
+                new SqlValues { Name = "@personId", Value = personId! },
+            };
+            var dataTablePerson = await sqlQueries.QuerySelectAsync(querySearchPerson, parametersSearchPerson);
+            if (dataTablePerson.Rows.Count == 0)
+                throw new PersonNotFoundException();
+
             if (isInclude)
             {
                 string query = @$"
                     INSERT INTO [PersonCompetition] ([CompetitionId], [PersonId])
-                    VALUES ('{competitionId}', '{personId}')
+                    VALUES (@competitionId, @personId)
                 ";
+                var parameters = new List<SqlValues>()
+                {
+                    new SqlValues { Name = "@competitionId", Value = competitionId },
+                    new SqlValues { Name = "@personId", Value = personId },
+                };
                 try
                 {
-                    await sqlQueries.QueryChangesAsync(query);
+                    await sqlQueries.QueryChangesAsync(query, parameters);
                 }
                 catch (SqlException)
                 {
@@ -91,11 +113,16 @@ namespace SportCompetitionsAPI.Service.Services
             {
                 string query = @$"
                     DELETE FROM [PersonCompetition] 
-                    WHERE [CompetitionId] = '{competitionId}' AND [PersonId] = '{personId}'
+                    WHERE [CompetitionId]=@competitionId AND [PersonId]=@personId
                 ";
+                var parameters = new List<SqlValues>()
+                {
+                    new SqlValues { Name = "@competitionId", Value = competitionId },
+                    new SqlValues { Name = "@personId", Value = personId },
+                };
                 try
                 {
-                    await sqlQueries.QueryChangesAsync(query);
+                    await sqlQueries.QueryChangesAsync(query, parameters);
                 }
                 catch (SqlException)
                 {
@@ -107,6 +134,7 @@ namespace SportCompetitionsAPI.Service.Services
         public async Task<IEnumerable<Competition>> Read(Guid? personId = null)
         {
             var persons = new List<Competition>();
+            List<SqlValues> parameters = null!;
             string query = @$"
                 SELECT 
                     [Competition].[Id],
@@ -119,6 +147,7 @@ namespace SportCompetitionsAPI.Service.Services
 		            [Sport].[Id]=[Competition].[SportId]
             ";
             if (personId is not null)
+            {
                 query = @$"
                     SELECT 
                         [Competition].[Id],
@@ -131,9 +160,14 @@ namespace SportCompetitionsAPI.Service.Services
 	                    [PersonCompetition].[CompetitionId]=[Competition].[Id]
                     LEFT JOIN [Sport] ON 
 	                    [Sport].[Id]=[Competition].[SportId]
-                    WHERE [PersonCompetition].[PersonId] = '{personId}'
+                    WHERE [PersonCompetition].[PersonId] = @personId
                 ";
-            DataTable dataTable = await sqlQueries.QuerySelectAsync(query);
+                parameters = new List<SqlValues>()
+                {
+                    new SqlValues { Name = "@personId", Value = personId! }
+                };
+            }
+            DataTable dataTable = await sqlQueries.QuerySelectAsync(query, parameters);
             foreach (DataRow row in dataTable.Rows)
             {
                 var person = GetCompetitionByRow(row);
@@ -154,9 +188,13 @@ namespace SportCompetitionsAPI.Service.Services
                 FROM [Competition]
 	            LEFT JOIN [Sport] ON 
 		            [Sport].[Id]=[Competition].[SportId]
-                WHERE [Competition].[Id] = '{id}'
+                WHERE [Competition].[Id] = @id
             ";
-            DataTable dataTable = await sqlQueries.QuerySelectAsync(query);
+            var parameters = new List<SqlValues>()
+            {
+                new SqlValues { Name = "@id", Value = id! }
+            };
+            DataTable dataTable = await sqlQueries.QuerySelectAsync(query, parameters);
             if (dataTable.Rows.Count == 0) throw new CompetitionNotFoundException();
             var competition = GetCompetitionByRow(dataTable.Rows[0]);
             return competition;
@@ -166,12 +204,19 @@ namespace SportCompetitionsAPI.Service.Services
         {
             string query = @$"
                 UPDATE [Competition] 
-                SET [Name]=N'{name}', [Date]='{SqlConvert.Date(date)}', [SportId]='{sportId}'
-                WHERE [Id] = '{id}'
+                SET [Name]=@name, [Date]=@date, [SportId]=@sportId
+                WHERE [Id]=@id
             ";
+            var parameters = new List<SqlValues>()
+            {
+                new SqlValues { Name = "@id", Value = id },
+                new SqlValues { Name = "@name", Value = name },
+                new SqlValues { Name = "@date", Value = date },
+                new SqlValues { Name = "@sportId", Value = sportId },
+            };
             try
             {
-                int count = await sqlQueries.QueryChangesAsync(query);
+                int count = await sqlQueries.QueryChangesAsync(query, parameters);
                 if (count == 0) throw new CompetitionNotFoundException();
             }
             catch (SqlException)
@@ -193,7 +238,7 @@ namespace SportCompetitionsAPI.Service.Services
             Sport = new Sport
             {
                 Id = row.Field<Guid>("SportId"),
-                Name = row.Field<string>("SportName") ?? "", 
+                Name = row.Field<string>("SportName") ?? "",
             }
         };
     }

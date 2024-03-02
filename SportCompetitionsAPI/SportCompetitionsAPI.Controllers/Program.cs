@@ -1,6 +1,6 @@
 using SportCompetitionsAPI.Controllers.Middlewares;
-using SportCompetitionsAPI.Service;
 using SportCompetitionsAPI.Service.Abstractions;
+using SportCompetitionsAPI.Service.ADO;
 using SportCompetitionsAPI.Service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,7 +38,7 @@ app.UseCors(options =>
         .AllowAnyMethod()
         .AllowCredentials()); // Разрешить отправку куки
 
-app.UseTimeDelayMiddleware();
+// app.UseTimeDelayMiddleware();
 
 app.UseExceptionHandlerMiddleware();
 

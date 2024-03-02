@@ -18,6 +18,7 @@ const Input = ({
     <div className={className} style={style}>
       <div className={classes.body}>
         <div
+          style={error ? { color: "#f15225" } : {}}
           className={
             isFocus || value !== ""
               ? classes.placeholderFocus
@@ -29,7 +30,7 @@ const Input = ({
         <input
           className={classes.input}
           value={value}
-          style={error ? { outline: "10px solid black" } : {}}
+          style={error ? { outline: "2px solid #f15225" } : {}}
           onChange={(e) => setValue(e.target.value)}
           onFocus={() => isFocusChange(true)}
           onBlur={() => isFocusChange(false)}

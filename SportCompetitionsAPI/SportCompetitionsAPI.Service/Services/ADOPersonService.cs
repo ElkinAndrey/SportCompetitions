@@ -1,7 +1,7 @@
 ﻿using SportCompetitionsAPI.Domain.Entities;
 using SportCompetitionsAPI.Service.Abstractions;
+using SportCompetitionsAPI.Service.ADO;
 using SportCompetitionsAPI.Service.Exceptions;
-using SportCompetitionsAPI.Service.Functions;
 using System.Data;
 
 namespace SportCompetitionsAPI.Service.Services
@@ -29,18 +29,28 @@ namespace SportCompetitionsAPI.Service.Services
         {
             string query = @$"
                 INSERT INTO [Person] ([Name], [Email], [DateOfBirth]) 
-                VALUES (N'{name}', N'{email}', '{SqlConvert.Date(dateOfBirth)}')
+                VALUES (@name, @email, @dateOfBirth)
             ";
-            await sqlQueries.QueryChangesAsync(query);
+            var parameters = new List<SqlValues>()
+            {
+                new SqlValues { Name = "@name", Value = name },
+                new SqlValues { Name = "@email", Value = email },
+                new SqlValues { Name = "@dateOfBirth", Value = dateOfBirth },
+            };
+            await sqlQueries.QueryChangesAsync(query, parameters);
         }
 
         public async Task Delete(Guid id)
         {
             string query = @$"
                 DELETE FROM [Person] 
-                WHERE [Id] = '{id}'     
+                WHERE [Id] = @id     
             ";
-            int count = await sqlQueries.QueryChangesAsync(query);
+            var parameters = new List<SqlValues>()
+            {
+                new SqlValues{ Name = "@id", Value = id },
+            };
+            int count = await sqlQueries.QueryChangesAsync(query, parameters);
             if (count == 0) throw new PersonNotFoundException();
         }
 
@@ -49,8 +59,15 @@ namespace SportCompetitionsAPI.Service.Services
             bool isParticipatingInCompetition = true,
             bool isNotParticipatingInCompetition = false)
         {
+
             string query;
+            var parameters = new List<SqlValues>()
+            {
+                new SqlValues { Name = "@competitionId", Value = competitionId! },
+            };
             if (competitionId is null || (isParticipatingInCompetition && isNotParticipatingInCompetition))
+            {
+                parameters = null!;
                 query = @$"
                     SELECT 
                         [Id],
@@ -59,6 +76,7 @@ namespace SportCompetitionsAPI.Service.Services
                         [DateOfBirth]
                     FROM [Person]
                 ";
+            }
             else if (isParticipatingInCompetition)
                 query = @$"
                     SELECT 
@@ -69,7 +87,7 @@ namespace SportCompetitionsAPI.Service.Services
                     FROM [PersonCompetition]
                     LEFT JOIN [Person] ON 
 	                    [PersonCompetition].[PersonId]=[Person].[Id]
-                    WHERE [PersonCompetition].[CompetitionId] = '{competitionId}'
+                    WHERE [PersonCompetition].[CompetitionId] = @competitionId
                 ";
             else if (isNotParticipatingInCompetition)
                 query = @$"
@@ -88,12 +106,12 @@ namespace SportCompetitionsAPI.Service.Services
                     FROM [PersonCompetition]
                     LEFT JOIN [Person] ON 
 	                    [PersonCompetition].[PersonId]=[Person].[Id]
-                    WHERE [PersonCompetition].[CompetitionId] = '{competitionId}'
+                    WHERE [PersonCompetition].[CompetitionId] = @competitionId
                 ";
             else
                 return new List<Person>();
+            DataTable dataTable = await sqlQueries.QuerySelectAsync(query, parameters);
 
-            DataTable dataTable = await sqlQueries.QuerySelectAsync(query);
             var persons = new List<Person>();
             foreach (DataRow row in dataTable.Rows)
             {
@@ -112,9 +130,13 @@ namespace SportCompetitionsAPI.Service.Services
                     [Email],
                     [DateOfBirth]
                 FROM [Person]
-                WHERE [Id] = '{id}'
+                WHERE [Id] = @id
             ";
-            DataTable dataTable = await sqlQueries.QuerySelectAsync(query);
+            var parameters = new List<SqlValues>()
+            {
+                new SqlValues { Name = "@id", Value = id! },
+            };
+            DataTable dataTable = await sqlQueries.QuerySelectAsync(query, parameters);
             if (dataTable.Rows.Count == 0) throw new PersonNotFoundException();
             var person = GetPersonByRow(dataTable.Rows[0]);
             return person;
@@ -124,10 +146,17 @@ namespace SportCompetitionsAPI.Service.Services
         {
             string query = @$"
                 UPDATE [Person] 
-                SET [Name]=N'{name}', [Email]=N'{email}', [DateOfBirth]='{SqlConvert.Date(dateOfBirth)}'
-                WHERE [Id] = '{id}'
+                SET [Name]=@name, [Email]=@email, [DateOfBirth]=@dateOfBirth
+                WHERE [Id] =@id
             ";
-            int count = await sqlQueries.QueryChangesAsync(query);
+            var parameters = new List<SqlValues>()
+            {
+                new SqlValues { Name = "@id", Value = id },
+                new SqlValues { Name = "@name", Value = name },
+                new SqlValues { Name = "@email", Value = email },
+                new SqlValues { Name = "@dateOfBirth", Value = dateOfBirth },
+            };
+            int count = await sqlQueries.QueryChangesAsync(query, parameters);
             if (count == 0) throw new PersonNotFoundException();
         }
 

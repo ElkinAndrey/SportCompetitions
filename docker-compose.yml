@@ -20,19 +20,6 @@ services:
     networks:
       - default
 
-  backend-tests:
-    image: backend-tests
-    container_name: backend-tests
-    build:
-      context: SportCompetitionsAPI
-      dockerfile: SportCompetitionsAPI.Controllers/Dockerfile # Тут обязательно должен быть путь такого типа     
-      target: test
-    entrypoint:
-      - dotnet
-      - test
-      - --logger
-      - trx;LogFileName=/tests/test-results.trx
-
   client:
     image: client
     container_name: client
